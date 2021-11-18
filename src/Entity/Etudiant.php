@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Entity\User;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\EtudiantRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -10,16 +12,17 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=EtudiantRepository::class)
-  * @ApiResource(
+ * @ApiResource(
  *  normalizationContext = {"groups"={"user_read"}},
  *  denormalizationContext = {"groups"={"user_write"}},
  *      collectionOperations = {
  *          "POST" = {"path" = "/etudiant"},
- *          "GET" = {"path" = "/agenetudiant"},
+ *          "GET" = {"path" = "/etudiant"},
  *      },
  *      itemOperations = {
  *          "GET" = {"path" = "/etudiant/{id}"},
- *          "DELETE" = {"path" = "/etudiant/{id}/delete"},
+ *          "DELETE" = {"path" = "/etudiant/{id}/bloque"},
+ *          "DELETE" = {"path" = "/etudiant/{id}/debloque"},
  *          "PUT" = {"path" = "/etudiant/{id}/edite"},
  *      }
  * )
@@ -67,6 +70,16 @@ class Etudiant extends User
      * @Groups({"user_write","user_read"})
      */
     private $filiere;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Payement::class, mappedBy="etudiant")
+     */
+    private $payements;
+
+    public function __construct()
+    {
+        $this->payements = new ArrayCollection();
+    }
 
 
     public function getNiveau(): ?string
@@ -137,6 +150,36 @@ class Etudiant extends User
     public function setFiliere(?Filiere $filiere): self
     {
         $this->filiere = $filiere;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Payement[]
+     */
+    public function getPayements(): Collection
+    {
+        return $this->payements;
+    }
+
+    public function addPayement(Payement $payement): self
+    {
+        if (!$this->payements->contains($payement)) {
+            $this->payements[] = $payement;
+            $payement->setEtudiant($this);
+        }
+
+        return $this;
+    }
+
+    public function removePayement(Payement $payement): self
+    {
+        if ($this->payements->removeElement($payement)) {
+            // set the owning side to null (unless already changed)
+            if ($payement->getEtudiant() === $this) {
+                $payement->setEtudiant(null);
+            }
+        }
 
         return $this;
     }

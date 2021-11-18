@@ -35,7 +35,7 @@ class Filiere
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"filiere_write","filiere_read"})
+     * @Groups({"filiere_write","filiere_read","user_write","user_read"})
      */
     private $libelle;
 

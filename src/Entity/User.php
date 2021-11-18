@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Entity;
+
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
@@ -24,7 +25,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *          "GET" = {"path" = "/user"},
  *      },
  *      itemOperations = {
- *          "GET" = {"path" = "/user/{id}"}
+ *          "GET" = {"path" = "/user/{id}"},
  *      }
  * )
  */
@@ -141,7 +142,7 @@ class User implements UserInterface
     {
         $roles = $this->roles;
         // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_'.strtoupper($this->getProfile()->getLibelle());
+        $roles[] = 'ROLE_' . strtoupper($this->getProfile()->getLibelle());
 
         return array_unique($roles);
     }
@@ -251,7 +252,7 @@ class User implements UserInterface
     public function getAvatar()
     {
         if ($this->avatar != null) {
-            return $this->avatar != null ? \base64_encode(stream_get_contents($this->avatar)):null;
+            return $this->avatar != null ? \base64_encode(stream_get_contents($this->avatar)) : null;
         }
     }
 
